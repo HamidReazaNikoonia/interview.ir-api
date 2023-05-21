@@ -14,7 +14,7 @@ const recordSchema = new mongoose.Schema(
     },
     interviewUserId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Coach",
       autopopulate: true,
       required: false,
     },

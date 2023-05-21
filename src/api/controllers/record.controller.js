@@ -3,6 +3,7 @@ const { omit } = require("lodash");
 const { v4: uuidv4 } = require("uuid");
 const APIError = require("../errors/api-error");
 const Record = require("../models/record.model");
+const Coach = require("../models/coach.model");
 const Transaction = require("../models/transaction.model");
 const ZarinpalCheckout = require("../services/payment");
 
@@ -157,6 +158,16 @@ exports.create = async (req, res, next) => {
         githubProfile: req.body.github,
       },
     };
+
+    if (req.body.coachId) {
+      const coachUser = await Coach.findById(req.body.coachId);
+
+      if (coachUser) {
+        body.interviewUserId = req.body.coachId;
+        body.amount = coachUser.amount;
+      }
+    }
+
 
     // Create Interview Record
     const record = new Record(body);

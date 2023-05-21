@@ -1,6 +1,4 @@
 const httpStatus = require("http-status");
-const { omit } = require("lodash");
-const { v4: uuidv4 } = require("uuid");
 const APIError = require("../errors/api-error");
 const Coach = require("../models/coach.model");
 
@@ -55,14 +53,6 @@ exports.update = async (req, res, next) => {
             new : true,
             runValidators : true
         });
-
-
-        res.json({
-            data: updatedCoach,
-            h: req.params.id
-        })
-
-        return false
 
         if (!updatedCoach) {
             throw new APIError({
