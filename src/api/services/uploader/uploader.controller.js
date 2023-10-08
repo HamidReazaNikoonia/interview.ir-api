@@ -22,12 +22,14 @@ router.post(
       const fileUploded = {
         file_name: file.filename,
         field_name: file.fieldname,
+        original_name: file.originalname
       };
+
       const newUpload = new Upload(fileUploded);
       const uploadedFile = await newUpload.save();
 
       res.status(200).json({
-        uploadedFile,
+        uploadedFile
       });
     } catch (error) {
       console.log(error.message);

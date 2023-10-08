@@ -40,6 +40,10 @@ const recordSchema = new mongoose.Schema(
       type: String,
       enum: ["JUNIOR", "MID_LEVEL", "SENIOR"],
     },
+    origin: {
+      type: String,
+      enum: ["ENG", "PR"]
+    },
     paymentStatus: {
       type: String,
       enum: ["PAYED", "CANCELED", "PROGRESS"],
@@ -53,6 +57,11 @@ const recordSchema = new mongoose.Schema(
     social: {
       linkedinProfile: String,
       githubProfile: String,
+    },
+    resumeFile: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Upload",
+      autopopulate: false,
     },
     result: {
       accessToNextRound: {
