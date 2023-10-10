@@ -123,7 +123,7 @@ exports.create = async (req, res, next) => {
     );
     const payment = await zarinpal.PaymentRequest({
       Amount: recordAmout,
-      CallbackURL: "http://localhost:3000/free/payment-result/",
+      CallbackURL: "http://localhost:3030/payment-result",
       Description: "interview",
       Mobile: user.mobile,
       order_id: factorNumber,
