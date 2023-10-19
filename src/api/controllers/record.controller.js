@@ -153,6 +153,7 @@ exports.create = async (req, res, next) => {
       level: req.body.level,
       paymentStatus: "PROGRESS",
       amount: recordAmout,
+      origin: req.body.origin,
       social: {
         linkedinProfile: req.body.linkedin,
         githubProfile: req.body.github,
@@ -173,7 +174,8 @@ exports.create = async (req, res, next) => {
     const record = new Record(body);
     const savedRecord = await record.save();
 
-    transaction.recordId = transaction.$set("recordId", savedRecord._id);
+    // transaction.recordId = 
+    transaction.$set("recordId", savedRecord._id);
 
     const savedTransaction = await transaction.save();
 
@@ -217,7 +219,7 @@ exports.verifyTransactionRecord = async (req, res, next) => {
       });
     }
 
-    if (!req.body.authority || !req.body.amount) {
+    if (!req.body.authority || !req.body.amount || !req.body.factor_number) {
       throw new APIError({
         status: httpStatus.NOT_FOUND,
         message: "Token Not Existed",
@@ -245,23 +247,27 @@ exports.verifyTransactionRecord = async (req, res, next) => {
       });
     }
 
+    console.log(verifyResponse)
+
     // When transaction status equal false
-    // if (verifyResponse.status !== 100 || verifyResponse.status !== 101) {
-    //   throw new APIError({
-    //     message: "Payment Faild",
-    //     status: httpStatus.BAD_REQUEST,
-    //   });
-    // }
+    if (verifyResponse["Status"] != 101 && verifyResponse["Status"] != 100) {
+      throw new APIError({
+        message: "Payment Faild",
+        status: httpStatus.BAD_REQUEST,
+        errors: verifyResponse
+        
+      });
+    }
 
-    res.json({
-      verifyResponse,
-    });
+    // res.json({
+    //   verifyResponse,
+    // });
 
-    return false;
+    // return false;
 
     // Get Transaction By FactorNumber
     const transaction = await Transaction.findOne({
-      factorNumber: verifyResponse.factorNumber,
+      factorNumber: req.body.factor_number,
     }).populate({ path: "userId", options: { autopopulate: false } });
 
     if (!transaction) {
@@ -275,7 +281,7 @@ exports.verifyTransactionRecord = async (req, res, next) => {
     // eslint-disable-next-line max-len
     transaction.set({
       status: true,
-      referenceId: verifyResponse.transId,
+      referenceId: verifyResponse["RefID"],
       //   amount: transaction.amount,
     });
     const updatedTransaction = await transaction.save();

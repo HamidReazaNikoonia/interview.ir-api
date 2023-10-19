@@ -19,7 +19,6 @@ router.param("userId", userController.load);
 
 router.post(
   "/:userId/verify-transaction-record/:recordId",
-  authorize(),
   controller.verifyTransactionRecord
 );
 

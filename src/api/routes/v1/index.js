@@ -2,6 +2,7 @@ const express = require("express");
 const userRoutes = require("./user.route");
 const authRoutes = require("./auth.route");
 const interviewRoutes = require("./interview.route");
+const coachRoutes = require("./coach.route");
 const adminRoutes = require("./admin.route.JS");
 const uploadRoute = require('../../services/uploader/uploader.controller');
 
@@ -20,6 +21,7 @@ router.use("/docs", express.static("docs"));
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
 router.use("/interview", interviewRoutes);
+router.use("/coach", coachRoutes);
 router.use("/admin", adminRoutes);
 
 router.use('/upload', uploadRoute);
