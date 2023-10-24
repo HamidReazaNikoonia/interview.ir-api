@@ -1,11 +1,21 @@
 const httpStatus = require("http-status");
 const { omit } = require("lodash");
 const { v4: uuidv4 } = require("uuid");
+const ObjectId = require("mongoose").Types.ObjectId;
+
 const APIError = require("../errors/api-error");
 const Record = require("../models/record.model");
 const Coach = require("../models/coach.model");
 const Transaction = require("../models/transaction.model");
 const ZarinpalCheckout = require("../services/payment");
+
+/**
+ * True if provided object ID valid
+ * @param {string} id
+ */
+function isObjectIdValid(id) {
+  return ObjectId.isValid(id) && new ObjectId(id) == id;
+}
 
 // /**
 //  * Load user and append to req.
@@ -96,7 +106,7 @@ exports.getInterviewVerRecords = async function (req, res, next) {
 };
 
 /**
- * Create new user
+ * Create new record
  * @public
  */
 exports.create = async (req, res, next) => {
@@ -160,6 +170,14 @@ exports.create = async (req, res, next) => {
       },
     };
 
+    if (req.body.resumeFile) {
+      // check Id of resume
+
+      if (isObjectIdValid(req.body.resumeFile)) {
+        body.resumeFile = req.body.resumeFile;
+      }
+    }
+
     if (req.body.coachId) {
       const coachUser = await Coach.findById(req.body.coachId);
 
@@ -169,12 +187,11 @@ exports.create = async (req, res, next) => {
       }
     }
 
-
     // Create Interview Record
     const record = new Record(body);
     const savedRecord = await record.save();
 
-    // transaction.recordId = 
+    // transaction.recordId =
     transaction.$set("recordId", savedRecord._id);
 
     const savedTransaction = await transaction.save();
@@ -247,15 +264,14 @@ exports.verifyTransactionRecord = async (req, res, next) => {
       });
     }
 
-    console.log(verifyResponse)
+    console.log(verifyResponse);
 
     // When transaction status equal false
     if (verifyResponse["Status"] != 101 && verifyResponse["Status"] != 100) {
       throw new APIError({
         message: "Payment Faild",
         status: httpStatus.BAD_REQUEST,
-        errors: verifyResponse
-        
+        errors: verifyResponse,
       });
     }
 
